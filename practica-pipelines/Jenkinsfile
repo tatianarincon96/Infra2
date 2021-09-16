@@ -14,7 +14,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                dir ('maven-adderapp') {
+                  sh "mvn test"
+                }
             }
         }
         stage('Deploy') {
@@ -25,6 +27,11 @@ pipeline {
     }
 
     post {
+        always {
+            dir('maven-adderapp') {
+                junit 'target/surefire-reports/*.xml'
+            }
+        }
         success {
             dir ('maven-adderapp') {
               archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
